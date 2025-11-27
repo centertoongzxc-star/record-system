@@ -4,173 +4,128 @@
 <meta charset="UTF-8">
 <title>ระบบบันทึกข้อมูล</title>
 <style>
-    body {
-        font-family: Arial;
-        padding: 20px;
-        max-width: 900px;
-        margin: auto;
-    }
-    input, select, button {
-        padding: 8px;
-        margin: 5px 0;
-        width: 100%;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-    }
-    table, th, td {
-        border: 1px solid gray;
-    }
-    th, td {
-        padding: 8px;
-        text-align: center;
-    }
-    .deleteBtn {
-        background: red;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        cursor: pointer;
-    }
-    .paid { background: #d4ffd4; }
-    .unpaid { background: #ffd4d4; }
-    #filterArea {
-        margin-top: 15px;
-        padding: 10px;
-        background: #f3f3f3;
-        border-radius: 6px;
-    }
+    body { font-family: sans-serif; padding: 20px; background: #f5f5f5; }
+    h2 { margin-top: 30px; }
+    .container { background: white; padding: 20px; border-radius: 10px; max-width: 900px; margin: auto; }
+    label { font-weight: bold; }
+    select, input { padding: 5px; margin: 5px 0; width: 100%; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #eaeaea; }
+    .paid { background: #b7ffb7; }     /* สีเขียว */
+    .unpaid { background: #ffb7b7; }   /* สีแดง */
+    button { padding: 7px 12px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+    .del-btn { background: #ff4d4d; color: white; }
+    .save-btn { background: #4caf50; color: white; width: 100%; }
 </style>
 </head>
 <body>
 
-<h2>📌 ระบบบันทึกข้อมูล</h2>
+<div class="container">
+    <h1>ระบบบันทึกข้อมูลรายจ่าย</h1>
 
-<label>ชื่อผู้ซื้อ:</label>
-<input id="name" type="text">
+    <label>หมวด</label>
+    <select id="category">
+        <option value="นายสิบ">นายสิบ</option>
+        <option value="พลทหาร">พลทหาร</option>
+        <option value="รายวัน">รายวัน</option>
+    </select>
 
-<label>จำนวนเงิน:</label>
-<input id="amount" type="number">
+    <label>ชื่อผู้ซื้อ</label>
+    <input type="text" id="name">
 
-<label>ประเภทเงิน:</label>
-<select id="payType">
-    <option value="เงินสด">เงินสด</option>
-    <option value="เงินโอน">เงินโอน</option>
-</select>
+    <label>จำนวนเงิน</label>
+    <input type="number" id="amount">
 
-<label>หมวดหมู่:</label>
-<select id="category">
-    <option value="เซ็นนายสิบ">เซ็นนายสิบ</option>
-    <option value="เซ็นพลทหาร">เซ็นพลทหาร</option>
-    <option value="รายวัน">รายวัน</option>
-</select>
+    <label>วันที่บันทึก</label>
+    <input type="date" id="date">
 
-<label>สถานะ:</label>
-<select id="status">
-    <option value="ยังไม่จ่าย">ยังไม่จ่าย</option>
-    <option value="จ่ายแล้ว">จ่ายแล้ว</option>
-</select>
+    <label>สถานะการจ่าย</label>
+    <select id="status">
+        <option value="ยังไม่จ่าย">ยังไม่จ่าย</option>
+        <option value="จ่ายแล้ว">จ่ายแล้ว</option>
+    </select>
 
-<button onclick="addData()">บันทึกข้อมูล</button>
+    <label>เซ็น</label>
+    <input type="text" id="sign">
 
-<div id="filterArea">
-    <h3>🔍 ค้นหา / ตัวกรอง</h3>
-    <input id="searchBox" type="text" placeholder="ค้นหาชื่อ..." onkeyup="loadTable()">
-    <button onclick="showUnpaid()">แสดงเฉพาะยังไม่จ่าย</button>
-    <button onclick="showAll()">แสดงทั้งหมด</button>
+    <label>เอวลา</label>
+    <input type="text" id="leave">
+
+    <button class="save-btn" onclick="saveData()">บันทึกข้อมูล</button>
+
+    <h2>ข้อมูลย้อนหลัง</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>หมวด</th>
+                <th>ชื่อ</th>
+                <th>จำนวนเงิน</th>
+                <th>วันที่</th>
+                <th>สถานะ</th>
+                <th>เซ็น</th>
+                <th>เอวลา</th>
+                <th>ลบ</th>
+            </tr>
+        </thead>
+        <tbody id="dataTable"></tbody>
+    </table>
 </div>
-
-<h3>📄 รายการทั้งหมด</h3>
-<table id="dataTable">
-    <thead>
-        <tr>
-            <th>ชื่อ</th>
-            <th>เงิน</th>
-            <th>ประเภท</th>
-            <th>หมวดหมู่</th>
-            <th>สถานะ</th>
-            <th>วันเวลา</th>
-            <th>ลบ</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
 
 <script>
 let dataList = JSON.parse(localStorage.getItem("records")) || [];
-let filterUnpaid = false;
 
 function saveData() {
-    localStorage.setItem("records", JSON.stringify(dataList));
-}
+    const item = {
+        category: document.getElementById("category").value,
+        name: document.getElementById("name").value,
+        amount: document.getElementById("amount").value,
+        date: document.getElementById("date").value,
+        status: document.getElementById("status").value,
+        sign: document.getElementById("sign").value,
+        leave: document.getElementById("leave").value
+    };
 
-function loadTable() {
-    const table = document.querySelector("#dataTable tbody");
-    const search = document.getElementById("searchBox").value.toLowerCase();
-
-    table.innerHTML = "";
-
-    dataList.forEach((item, index) => {
-        
-        if (filterUnpaid && item.status !== "ยังไม่จ่าย") return;
-        if (search && !item.name.toLowerCase().includes(search)) return;
-
-        let rowClass = item.status === "จ่ายแล้ว" ? "paid" : "unpaid";
-
-        let row = `
-            <tr class="${rowClass}">
-                <td>${item.name}</td>
-                <td>${item.amount}</td>
-                <td>${item.payType}</td>
-                <td>${item.category}</td>
-                <td>${item.status}</td>
-                <td>${item.date}</td>
-                <td><button class="deleteBtn" onclick="deleteData(${index})">ลบ</button></td>
-            </tr>
-        `;
-        table.innerHTML += row;
-    });
-}
-
-function addData() {
-    const name = document.getElementById("name").value;
-    const amount = document.getElementById("amount").value;
-    const payType = document.getElementById("payType").value;
-    const category = document.getElementById("category").value;
-    const status = document.getElementById("status").value;
-    const date = new Date().toLocaleString("th-TH");
-
-    if (!name || !amount) {
-        alert("กรุณากรอกชื่อและจำนวนเงิน");
+    if (!item.name || !item.amount || !item.date) {
+        alert("กรุณากรอกข้อมูลให้ครบ");
         return;
     }
 
-    dataList.push({ name, amount, payType, category, status, date });
-    saveData();
+    dataList.push(item);
+    localStorage.setItem("records", JSON.stringify(dataList));
     loadTable();
-
-    document.getElementById("name").value = "";
-    document.getElementById("amount").value = "";
 }
 
-function deleteData(index) {
+function loadTable() {
+    let table = document.getElementById("dataTable");
+    table.innerHTML = "";
+
+    dataList.forEach((item, index) => {
+        let row = document.createElement("tr");
+
+        row.className = item.status === "จ่ายแล้ว" ? "paid" : "unpaid";
+
+        row.innerHTML = `
+            <td>${item.category}</td>
+            <td>${item.name}</td>
+            <td>${item.amount}</td>
+            <td>${item.date}</td>
+            <td>${item.status}</td>
+            <td>${item.sign}</td>
+            <td>${item.leave}</td>
+            <td><button class="del-btn" onclick="deleteItem(${index})">ลบ</button></td>
+        `;
+
+        table.appendChild(row);
+    });
+}
+
+function deleteItem(index) {
     if (confirm("ต้องการลบข้อมูลนี้ใช่ไหม?")) {
         dataList.splice(index, 1);
-        saveData();
+        localStorage.setItem("records", JSON.stringify(dataList));
         loadTable();
     }
-}
-
-function showUnpaid() {
-    filterUnpaid = true;
-    loadTable();
-}
-
-function showAll() {
-    filterUnpaid = false;
-    loadTable();
 }
 
 loadTable();
